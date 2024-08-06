@@ -1,139 +1,82 @@
+import { registerBlockVariation } from "@wordpress/blocks";
+import { addFilter } from '@wordpress/hooks';
+import { createHigherOrderComponent } from '@wordpress/compose';
+import { InspectorControls } from '@wordpress/block-editor';
 
-/**
- * Plugin Name: Custom Query Loop Block
- * Description: Adds a custom query loop block with dynamic core classes.
- * Version: 1.0
- * Author: Your Name
- */
+const MY_VARIATION_NAME = "query-loop-extend";
 
-// defined( 'ABSPATH' ) || exit;
+// Register the block variation
+registerBlockVariation("core/query", {
+    name: MY_VARIATION_NAME,
+    title: "Custom Query Loop",
+    description: "A custom query loop block with extended functionalities.",
+    icon: "smiley",
+    attributes: {
+        namespace: MY_VARIATION_NAME,
+        displayPagination: {
+            type: 'boolean',
+            default: false
+        },
+        query: {
+            query_loop_extend: { 
+                type: 'boolean', 
+                default: true 
+            },
+            perPage: -1, // Set to -1 to show all posts
+        },
+    },
+    isActive: (blockAttributes) => {
+        console.log('Block Attributes:', blockAttributes); // Debugging line
+        return blockAttributes.namespace === MY_VARIATION_NAME;
+    },
+    scope: ["inserter"],
+});
 
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// $custom_class = 'custom-list';
-// if ( is_string( $block_content ) ) {
-// $block_content = preg_replace_callback(
-// '/<li\b([^>]*)>/i',
-// function ( $matches ) use ( $custom_class ) {
-// if ( strpos( $matches[1], 'class=' ) !== false ) {
-// return str_replace( 'class="', 'class="' . $custom_class . ' ', $matches[0] );
-// } else {
-// return '<li' . $matches[1] . ' class="' . esc_attr( $custom_class ) . '">';
-// }
-// },
-// $block_content
-// );
-// }
-// }
-// return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
+// Modify the core Query Loop block
+const withCustomQueryLoop = createHigherOrderComponent((BlockEdit) => {
+    return (props) => {
+        if (props.name === 'core/query' && props.attributes.namespace === MY_VARIATION_NAME) {
+            // Remove pagination from the query
+            props.attributes.query = {
+                ...props.attributes.query,
+                perPage: -1,
+            };
 
+            // Force displayPagination to false
+            props.attributes.displayPagination = false;
 
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// 	if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// 		$custom_class = 'custom-list';
+            return (
+                <>
+                    <BlockEdit {...props} />
+                    <InspectorControls>
+                        {/* This empty InspectorControls component will override the default one,
+                            effectively removing the pagination controls */}
+                    </InspectorControls>
+                </>
+            );
+        }
+        return <BlockEdit {...props} />;
+    };
+}, 'withCustomQueryLoop');
 
-// 		// Use DOMDocument to manipulate the HTML content more reliably
-// 		$dom = new DOMDocument();
-// 		libxml_use_internal_errors( true ); // Suppress errors due to malformed HTML
-// 		$dom->loadHTML( mb_convert_encoding( $block_content, 'HTML-ENTITIES', 'UTF-8' ) );
-// 		libxml_clear_errors();
+addFilter('editor.BlockEdit', 'my-plugin/custom-query-loop', withCustomQueryLoop);
 
-// 		$lis = $dom->getElementsByTagName( 'li' );
+// Remove pagination from the block preview
+const removePreviewPagination = (element, blockType, attributes) => {
+    if (blockType.name === 'core/query' && attributes.namespace === MY_VARIATION_NAME) {
+        // Find and remove the pagination component from the preview
+        const removePagination = (el) => {
+            if (el && el.props && el.props.children) {
+                el.props.children = Array.isArray(el.props.children) 
+                    ? el.props.children.filter(child => !child || !child.props || child.props.className !== 'wp-block-query-pagination')
+                    : el.props.children;
+            }
+            return el;
+        };
 
-// 		foreach ( $lis as $li ) {
-// 			// Extract post ID from class attribute
-// 			$classAttr = $li->getAttribute( 'class' );
-// 			preg_match( '/post-(\d+)/', $classAttr, $matches );
+        return removePagination(element);
+    }
+    return element;
+};
 
-// 			if ( isset( $matches[1] ) ) {
-// 				$post_id = $matches[1];
-
-// 				// Fetch term IDs for categories and tags
-// 				$categories = wp_get_post_categories( $post_id );
-// 				$tags       = wp_get_post_tags( $post_id );
-
-// 				// Set data attributes with term IDs
-// 				$li->setAttribute( 'data-category-ids', implode( ',', $categories ) );
-// 				$li->setAttribute( 'data-tag-ids', implode( ',', wp_list_pluck( $tags, 'term_id' ) ) );
-
-// 				// Add custom class if not present
-// 				if ( strpos( $classAttr, $custom_class ) === false ) {
-// 					$li->setAttribute( 'class', trim( $classAttr . ' ' . $custom_class ) );
-// 				}
-// 			}
-// 		}
-
-// 		// Save changes back to HTML
-// 		$block_content = $dom->saveHTML( $dom->documentElement );
-// 	}
-
-// 	return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
-
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// $custom_class = 'custom-list';
-// if ( is_string( $block_content ) ) {
-// $block_content = preg_replace_callback(
-// '/<li\b([^>]*)>/i',
-// function ( $matches ) use ( $custom_class ) {
-// if ( strpos( $matches[1], 'class=' ) !== false ) {
-// return str_replace( 'class="', 'class="' . $custom_class . ' ', $matches[0] );
-// } else {
-// return '<li' . $matches[1] . ' class="' . esc_attr( $custom_class ) . '">';
-// }
-// },
-// $block_content
-// );
-// }
-// }
-// return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
-
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// $custom_class = 'custom-list';
-
-// Use DOMDocument to manipulate the HTML content more reliably
-// $dom = new DOMDocument();
-// libxml_use_internal_errors( true ); // Suppress errors due to malformed HTML
-// $dom->loadHTML( mb_convert_encoding( $block_content, 'HTML-ENTITIES', 'UTF-8' ) );
-// libxml_clear_errors();
-
-// $lis = $dom->getElementsByTagName( 'li' );
-
-// foreach ( $lis as $li ) {
-// Extract post ID from class attribute
-// $classAttr = $li->getAttribute( 'class' );
-// preg_match( '/post-(\d+)/', $classAttr, $matches );
-
-// if ( isset( $matches[1] ) ) {
-// $post_id = $matches[1];
-
-// Fetch term IDs for categories and tags
-// $categories = wp_get_post_categories( $post_id );
-// $tags       = wp_get_post_tags( $post_id );
-
-// Combine term IDs for categories and tags
-// $term_ids = array_merge( $categories, wp_list_pluck( $tags, 'term_id' ) );
-// $li->setAttribute( 'data-term-ids', implode( ',', $term_ids ) );
-
-// Add custom class if not present
-// if ( strpos( $classAttr, $custom_class ) === false ) {
-// $li->setAttribute( 'class', trim( $classAttr . ' ' . $custom_class ) );
-// }
-// }
-// }
-
-// Save changes back to HTML
-// $block_content = $dom->saveHTML();
-// }
-
-// return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
-
+addFilter('blocks.getSaveElement', 'my-plugin/remove-pagination', removePreviewPagination);
