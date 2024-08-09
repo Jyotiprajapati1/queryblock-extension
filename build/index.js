@@ -1,144 +1,123 @@
 /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "@wordpress/blocks":
+/*!********************************!*\
+  !*** external ["wp","blocks"] ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["blocks"];
+
+/***/ }),
+
+/***/ "@wordpress/hooks":
+/*!*******************************!*\
+  !*** external ["wp","hooks"] ***!
+  \*******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["hooks"];
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/hooks */ "@wordpress/hooks");
+/* harmony import */ var _wordpress_hooks__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_hooks__WEBPACK_IMPORTED_MODULE_1__);
 
-/**
- * Plugin Name: Custom Query Loop Block
- * Description: Adds a custom query loop block with dynamic core classes.
- * Version: 1.0
- * Author: Your Name
- */
 
-// defined( 'ABSPATH' ) || exit;
-
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// $custom_class = 'custom-list';
-// if ( is_string( $block_content ) ) {
-// $block_content = preg_replace_callback(
-// '/<li\b([^>]*)>/i',
-// function ( $matches ) use ( $custom_class ) {
-// if ( strpos( $matches[1], 'class=' ) !== false ) {
-// return str_replace( 'class="', 'class="' . $custom_class . ' ', $matches[0] );
-// } else {
-// return '<li' . $matches[1] . ' class="' . esc_attr( $custom_class ) . '">';
-// }
-// },
-// $block_content
-// );
-// }
-// }
-// return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
-
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// 	if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// 		$custom_class = 'custom-list';
-
-// 		// Use DOMDocument to manipulate the HTML content more reliably
-// 		$dom = new DOMDocument();
-// 		libxml_use_internal_errors( true ); // Suppress errors due to malformed HTML
-// 		$dom->loadHTML( mb_convert_encoding( $block_content, 'HTML-ENTITIES', 'UTF-8' ) );
-// 		libxml_clear_errors();
-
-// 		$lis = $dom->getElementsByTagName( 'li' );
-
-// 		foreach ( $lis as $li ) {
-// 			// Extract post ID from class attribute
-// 			$classAttr = $li->getAttribute( 'class' );
-// 			preg_match( '/post-(\d+)/', $classAttr, $matches );
-
-// 			if ( isset( $matches[1] ) ) {
-// 				$post_id = $matches[1];
-
-// 				// Fetch term IDs for categories and tags
-// 				$categories = wp_get_post_categories( $post_id );
-// 				$tags       = wp_get_post_tags( $post_id );
-
-// 				// Set data attributes with term IDs
-// 				$li->setAttribute( 'data-category-ids', implode( ',', $categories ) );
-// 				$li->setAttribute( 'data-tag-ids', implode( ',', wp_list_pluck( $tags, 'term_id' ) ) );
-
-// 				// Add custom class if not present
-// 				if ( strpos( $classAttr, $custom_class ) === false ) {
-// 					$li->setAttribute( 'class', trim( $classAttr . ' ' . $custom_class ) );
-// 				}
-// 			}
-// 		}
-
-// 		// Save changes back to HTML
-// 		$block_content = $dom->saveHTML( $dom->documentElement );
-// 	}
-
-// 	return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
-
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// $custom_class = 'custom-list';
-// if ( is_string( $block_content ) ) {
-// $block_content = preg_replace_callback(
-// '/<li\b([^>]*)>/i',
-// function ( $matches ) use ( $custom_class ) {
-// if ( strpos( $matches[1], 'class=' ) !== false ) {
-// return str_replace( 'class="', 'class="' . $custom_class . ' ', $matches[0] );
-// } else {
-// return '<li' . $matches[1] . ' class="' . esc_attr( $custom_class ) . '">';
-// }
-// },
-// $block_content
-// );
-// }
-// }
-// return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
-
-// function add_custom_class_to_query_loop( $block_content, $block ) {
-// if ( isset( $block['blockName'] ) && $block['blockName'] === 'core/query' ) {
-// $custom_class = 'custom-list';
-
-// Use DOMDocument to manipulate the HTML content more reliably
-// $dom = new DOMDocument();
-// libxml_use_internal_errors( true ); // Suppress errors due to malformed HTML
-// $dom->loadHTML( mb_convert_encoding( $block_content, 'HTML-ENTITIES', 'UTF-8' ) );
-// libxml_clear_errors();
-
-// $lis = $dom->getElementsByTagName( 'li' );
-
-// foreach ( $lis as $li ) {
-// Extract post ID from class attribute
-// $classAttr = $li->getAttribute( 'class' );
-// preg_match( '/post-(\d+)/', $classAttr, $matches );
-
-// if ( isset( $matches[1] ) ) {
-// $post_id = $matches[1];
-
-// Fetch term IDs for categories and tags
-// $categories = wp_get_post_categories( $post_id );
-// $tags       = wp_get_post_tags( $post_id );
-
-// Combine term IDs for categories and tags
-// $term_ids = array_merge( $categories, wp_list_pluck( $tags, 'term_id' ) );
-// $li->setAttribute( 'data-term-ids', implode( ',', $term_ids ) );
-
-// Add custom class if not present
-// if ( strpos( $classAttr, $custom_class ) === false ) {
-// $li->setAttribute( 'class', trim( $classAttr . ' ' . $custom_class ) );
-// }
-// }
-// }
-
-// Save changes back to HTML
-// $block_content = $dom->saveHTML();
-// }
-
-// return $block_content;
-// }
-// add_filter( 'render_block', 'add_custom_class_to_query_loop', 10, 2 );
+const MY_VARIATION_NAME = "query-loop-extend";
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockVariation)("core/query", {
+  name: MY_VARIATION_NAME,
+  title: "Custom Query Loop",
+  description: "A custom query loop block with extended functionalities.",
+  icon: "smiley",
+  isActive: ["namespace"],
+  attributes: {
+    namespace: MY_VARIATION_NAME
+  },
+  scope: ["inserter", 'block'],
+  allowedControls: ["postType"],
+  innerBlocks: [['core/post-template', {}, [['core/post-title'], ['core/post-date'], ['core/post-excerpt']]], ['core/query-no-results']],
+  supports: {
+    pagination: false
+  }
+});
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
